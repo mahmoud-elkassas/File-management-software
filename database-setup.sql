@@ -31,15 +31,29 @@ CREATE TABLE IF NOT EXISTS sms_history (
 ALTER TABLE persons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sms_history ENABLE ROW LEVEL SECURITY;
 
--- Create policies for persons table
-CREATE POLICY "Enable read access for all users" ON persons FOR SELECT USING (true);
-CREATE POLICY "Enable insert access for all users" ON persons FOR INSERT WITH CHECK (true);
-CREATE POLICY "Enable update access for all users" ON persons FOR UPDATE USING (true);
-CREATE POLICY "Enable delete access for all users" ON persons FOR DELETE USING (true);
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Enable read access for all users" ON persons;
+DROP POLICY IF EXISTS "Enable insert access for all users" ON persons;
+DROP POLICY IF EXISTS "Enable update access for all users" ON persons;
+DROP POLICY IF EXISTS "Enable delete access for all users" ON persons;
 
--- Create policies for sms_history table
-CREATE POLICY "Enable read access for all users" ON sms_history FOR SELECT USING (true);
-CREATE POLICY "Enable insert access for all users" ON sms_history FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Enable read access for all users" ON sms_history;
+DROP POLICY IF EXISTS "Enable insert access for all users" ON sms_history;
+
+-- Create new policies for persons table (allow all operations for anonymous users)
+CREATE POLICY "Allow all operations for persons" ON persons FOR ALL USING (true) WITH CHECK (true);
+
+-- Create new policies for sms_history table (allow all operations for anonymous users)
+CREATE POLICY "Allow all operations for sms_history" ON sms_history FOR ALL USING (true) WITH CHECK (true);
+
+-- Alternative: Create specific policies if the above doesn't work
+-- CREATE POLICY "Enable read access for all users" ON persons FOR SELECT USING (true);
+-- CREATE POLICY "Enable insert access for all users" ON persons FOR INSERT WITH CHECK (true);
+-- CREATE POLICY "Enable update access for all users" ON persons FOR UPDATE USING (true);
+-- CREATE POLICY "Enable delete access for all users" ON persons FOR DELETE USING (true);
+
+-- CREATE POLICY "Enable read access for all users" ON sms_history FOR SELECT USING (true);
+-- CREATE POLICY "Enable insert access for all users" ON sms_history FOR INSERT WITH CHECK (true);
 
 -- Insert sample data (optional)
 INSERT INTO persons (name, phone, date, status, list_number, receipt_number, register_number, request_name) 
@@ -49,6 +63,7 @@ VALUES
   ('محمد أحمد', '+970599345678', '2025-01-27', 'جاهز', 'L003', 'R003', 'REG003', 'طلب شهادة ميلاد')
 ON CONFLICT (list_number) DO NOTHING;
 
--- Show tables
-SELECT 'Tables created successfully!' as status;
-SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name IN ('persons', 'sms_history'); 
+-- Show tables and policies
+SELECT 'Tables and policies created successfully!' as status;
+SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name IN ('persons', 'sms_history');
+SELECT schemaname, tablename, policyname FROM pg_policies WHERE tablename IN ('persons', 'sms_history'); 
