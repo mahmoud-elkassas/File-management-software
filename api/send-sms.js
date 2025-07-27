@@ -1,7 +1,7 @@
 import twilio from 'twilio';
-import { PostgresDbService } from './postgres-db.js';
+import { SupabaseDbService } from './supabase-db.js';
 
-const db = new PostgresDbService();
+const db = new SupabaseDbService();
 
 // Initialize Twilio client only if credentials are available
 let twilioClient = null;

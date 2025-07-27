@@ -12,6 +12,7 @@
     "vercel-build": "vite build"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.52.1",
     "@vercel/postgres": "^0.10.0",
     "better-sqlite3": "^9.4.3",
     "cors": "^2.8.5",

@@ -1,6 +1,6 @@
-import { PostgresDbService } from '../postgres-db.js';
+import { SupabaseDbService } from '../supabase-db.js';
 
-const db = new PostgresDbService();
+const db = new SupabaseDbService();
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -15,12 +15,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Initialize database if tables don't exist
-    try {
-      await db.initDatabase();
-    } catch (initError) {
-      console.log('Database already initialized or error:', initError.message);
-    }
+    // Supabase handles table creation automatically
 
     switch (req.method) {
       case 'GET':

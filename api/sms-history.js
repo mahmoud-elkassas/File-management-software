@@ -1,6 +1,6 @@
-import { PostgresDbService } from './postgres-db.js';
+import { SupabaseDbService } from './supabase-db.js';
 
-const db = new PostgresDbService();
+const db = new SupabaseDbService();
 
 export default async function handler(req, res) {
   // Enable CORS
