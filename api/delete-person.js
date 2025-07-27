@@ -1,4 +1,4 @@
-import { SupabaseDbService } from '../../supabase-db.js';
+import { SupabaseDbService } from './supabase-db.js';
 
 const db = new SupabaseDbService();
 
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   const { id } = req.query;
 
-  console.log(`🔧 DELETE API Request: /api/persons/delete/${id}`);
+  console.log(`🔧 DELETE API Request: /api/delete-person?id=${id}`);
 
   try {
     if (!id) {
