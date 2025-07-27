@@ -1,7 +1,8 @@
 // SMS Service for sending notifications through backend API
 export class SMSService {
   constructor() {
-    this.apiUrl = "http://localhost:3000/api";
+    // Use environment variable for API URL, fallback to localhost for development
+    this.apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
     this.messageHistory = [];
 
     // Load message history from localStorage if available
