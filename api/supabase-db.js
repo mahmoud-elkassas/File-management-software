@@ -167,12 +167,20 @@ export class SupabaseDbService {
     }
   }
 
-  async deletePerson(listNumber) {
+  async deletePerson(identifier) {
     try {
-      const { error } = await supabase
-        .from('persons')
-        .delete()
-        .eq('list_number', listNumber);
+      // Check if identifier is a number (id) or string (list_number)
+      const isId = !isNaN(identifier) && Number.isInteger(Number(identifier));
+      
+      let query = supabase.from('persons').delete();
+      
+      if (isId) {
+        query = query.eq('id', identifier);
+      } else {
+        query = query.eq('list_number', identifier);
+      }
+
+      const { error } = await query;
 
       if (error) throw error;
       return { success: true };
