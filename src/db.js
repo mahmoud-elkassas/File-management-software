@@ -1,8 +1,12 @@
 // Frontend database service that communicates with the backend
 export class Database {
   constructor() {
-    // Use environment variable for API URL, fallback to Vercel deployment URL
+    // Use environment variable for API URL, fallback to relative path
     this.apiUrl = import.meta.env.VITE_API_URL || "/api";
+    
+    // Debug: Log the API URL being used
+    console.log('🔧 Database API URL:', this.apiUrl);
+    console.log('🔧 Current origin:', window.location.origin);
   }
 
   async handleResponse(response) {
@@ -93,7 +97,10 @@ export class Database {
 
   async deletePerson(listNumber) {
     try {
-      const response = await fetch(`${this.apiUrl}/persons/${listNumber}`, {
+      const deleteUrl = `${this.apiUrl}/persons/${listNumber}`;
+      console.log('🔧 DELETE URL:', deleteUrl);
+      
+      const response = await fetch(deleteUrl, {
         method: "DELETE",
       });
       return this.handleResponse(response);
