@@ -1,6 +1,4 @@
-import { PostgresDbService } from '../postgres-db.js';
-
-const db = new PostgresDbService();
+import { PostgresDbService } from './postgres-db.js';
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -20,11 +18,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { criteria, value, status } = req.body;
-    const updatedPersons = await db.updateStatus(criteria, value, status);
-    res.json(updatedPersons);
+    const db = new PostgresDbService();
+    await db.initDatabase();
+    
+    res.json({ 
+      success: true, 
+      message: 'Database initialized successfully' 
+    });
   } catch (error) {
-    console.error('Error in status update:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error initializing database:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
   }
 } 

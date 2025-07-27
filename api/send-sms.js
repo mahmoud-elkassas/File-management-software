@@ -1,4 +1,7 @@
 import twilio from 'twilio';
+import { PostgresDbService } from './postgres-db.js';
+
+const db = new PostgresDbService();
 
 // Initialize Twilio client only if credentials are available
 let twilioClient = null;
@@ -106,6 +109,15 @@ export default async function handler(req, res) {
       direction: result.direction,
     });
 
+    // Add to SMS history
+    await db.addSmsHistory({
+      to_number: to,
+      message: message,
+      status: result.status,
+      delivery_status: result.status,
+      error: null
+    });
+
     res.json({
       success: true,
       messageId: result.sid,
@@ -149,6 +161,15 @@ export default async function handler(req, res) {
         error: "Invalid Messaging Service SID. Please check your configuration.",
       });
     }
+
+    // Add failed attempt to SMS history
+    await db.addSmsHistory({
+      to_number: to,
+      message: message,
+      status: 'failed',
+      delivery_status: 'failed',
+      error: error.message || "Failed to send SMS"
+    });
 
     res.status(500).json({
       success: false,

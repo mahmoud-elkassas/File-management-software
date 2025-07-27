@@ -1,6 +1,6 @@
-import { DbService } from '../db.js';
+import { PostgresDbService } from '../postgres-db.js';
 
-const db = new DbService();
+const db = new PostgresDbService();
 
 export default async function handler(req, res) {
   // Enable CORS
