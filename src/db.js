@@ -1,8 +1,8 @@
 // Frontend database service that communicates with the backend
 export class Database {
   constructor() {
-    // Use environment variable for API URL, fallback to localhost for development
-    this.apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+    // Use environment variable for API URL, fallback to Vercel deployment URL
+    this.apiUrl = import.meta.env.VITE_API_URL || "/api";
   }
 
   async handleResponse(response) {
