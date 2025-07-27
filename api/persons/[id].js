@@ -16,6 +16,8 @@ export default async function handler(req, res) {
 
   const { id } = req.query;
 
+  console.log(`🔧 API Request: ${req.method} /api/persons/${id}`);
+
   try {
     switch (req.method) {
       case 'GET':
@@ -32,6 +34,7 @@ export default async function handler(req, res) {
         break;
       
       case 'DELETE':
+        console.log(`🔧 Deleting person with ID: ${id}`);
         await db.deletePerson(id);
         res.status(200).json({ success: true });
         break;
