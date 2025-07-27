@@ -97,7 +97,7 @@ export class Database {
 
   async deletePerson(listNumber) {
     try {
-      const deleteUrl = `${this.apiUrl}/persons/delete?id=${listNumber}`;
+      const deleteUrl = `${this.apiUrl}/persons/delete/${listNumber}`;
       console.log('🔧 DELETE URL:', deleteUrl);
       
       const response = await fetch(deleteUrl, {
