@@ -15,6 +15,13 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Initialize database if tables don't exist
+    try {
+      await db.initDatabase();
+    } catch (initError) {
+      console.log('Database already initialized or error:', initError.message);
+    }
+
     switch (req.method) {
       case 'GET':
         const persons = await db.getAllPersons();

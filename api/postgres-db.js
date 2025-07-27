@@ -2,7 +2,7 @@ import { sql } from '@vercel/postgres';
 
 export class PostgresDbService {
   constructor() {
-    this.initDatabase();
+    // Don't auto-initialize in constructor for serverless functions
   }
 
   async initDatabase() {

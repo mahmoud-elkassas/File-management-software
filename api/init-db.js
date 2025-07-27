@@ -23,13 +23,15 @@ export default async function handler(req, res) {
     
     res.json({ 
       success: true, 
-      message: 'Database initialized successfully' 
+      message: 'Database initialized successfully',
+      tables: ['persons', 'sms_history']
     });
   } catch (error) {
     console.error('Error initializing database:', error);
     res.status(500).json({ 
       success: false, 
-      error: error.message 
+      error: error.message,
+      details: error.stack
     });
   }
 } 
