@@ -11,7 +11,8 @@
     "server": "node server/index.js",
     "vercel-build": "vite build",
     "init-db": "node scripts/init-database.js",
-    "fix-rls": "node scripts/fix-rls-policies.js"
+    "fix-rls": "node scripts/fix-rls-policies.js",
+    "setup-db": "node scripts/setup-database.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.52.1",
