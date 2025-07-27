@@ -31,28 +31,78 @@ export default async function handler(req, res) {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Create persons table
-    const { error: personsError } = await supabase.rpc('create_persons_table', {});
-    if (personsError && !personsError.message.includes('already exists')) {
+    const { error: personsError } = await supabase.rpc('exec_sql', {
+      sql: `
+        CREATE TABLE IF NOT EXISTS persons (
+          id BIGSERIAL PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          phone VARCHAR(50) NOT NULL,
+          date DATE NOT NULL,
+          status VARCHAR(100) NOT NULL,
+          list_number VARCHAR(100) NOT NULL UNIQUE,
+          receipt_number VARCHAR(100) NOT NULL,
+          register_number VARCHAR(100) NOT NULL,
+          request_name VARCHAR(255) NOT NULL,
+          files TEXT,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
+    });
+    
+    if (personsError) {
       console.error('Error creating persons table:', personsError);
+      // Try alternative approach using direct SQL
+      const { error: directPersonsError } = await supabase
+        .from('persons')
+        .select('id')
+        .limit(1);
+      
+      if (directPersonsError && directPersonsError.message.includes('does not exist')) {
+        console.error('Persons table does not exist and cannot be created via RPC');
+      }
     }
 
     // Create sms_history table
-    const { error: smsError } = await supabase.rpc('create_sms_history_table', {});
-    if (smsError && !smsError.message.includes('already exists')) {
+    const { error: smsError } = await supabase.rpc('exec_sql', {
+      sql: `
+        CREATE TABLE IF NOT EXISTS sms_history (
+          id BIGSERIAL PRIMARY KEY,
+          to_number VARCHAR(50) NOT NULL,
+          message TEXT NOT NULL,
+          status VARCHAR(50) NOT NULL,
+          delivery_status VARCHAR(50) NOT NULL,
+          error TEXT,
+          sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
+    });
+    
+    if (smsError) {
       console.error('Error creating sms_history table:', smsError);
+      // Try alternative approach using direct SQL
+      const { error: directSmsError } = await supabase
+        .from('sms_history')
+        .select('id')
+        .limit(1);
+      
+      if (directSmsError && directSmsError.message.includes('does not exist')) {
+        console.error('SMS history table does not exist and cannot be created via RPC');
+      }
     }
 
     res.json({ 
       success: true, 
-      message: 'Supabase database initialized successfully',
-      tables: ['persons', 'sms_history']
+      message: 'Supabase database initialization attempted. Please create tables manually in Supabase dashboard if they do not exist.',
+      tables: ['persons', 'sms_history'],
+      note: 'If tables do not exist, please create them manually in the Supabase dashboard using the SQL provided in SUPABASE_SETUP.md'
     });
   } catch (error) {
     console.error('Error initializing Supabase database:', error);
     res.status(500).json({ 
       success: false, 
       error: error.message,
-      details: error.stack
+      details: error.stack,
+      note: 'Please create the database tables manually in the Supabase dashboard'
     });
   }
 } 
