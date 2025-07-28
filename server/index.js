@@ -109,10 +109,15 @@ app.post("/api/persons", async (req, res) => {
   }
 });
 
-app.put("/api/persons/:id", async (req, res) => {
+app.put("/api/persons", async (req, res) => {
   try {
-    const person = await db.updatePerson(req.body);
-    res.json(person);
+    const { id } = req.query;
+    if (!id) {
+      return res.status(400).json({ error: 'ID parameter is required for PUT' });
+    }
+    console.log(`🔧 Updating person with ID: ${id}`);
+    const updatedPerson = await db.updatePerson({ ...req.body, id });
+    res.json(updatedPerson);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -128,10 +133,15 @@ app.post("/api/persons/status", async (req, res) => {
   }
 });
 
-app.delete("/api/persons/:listNumber", async (req, res) => {
+app.delete("/api/persons", async (req, res) => {
   try {
-    await db.deletePerson(req.params.listNumber);
-    res.json({ success: true });
+    const { id } = req.query;
+    if (!id) {
+      return res.status(400).json({ error: 'ID parameter is required for DELETE' });
+    }
+    console.log(`🔧 Deleting person with ID: ${id}`);
+    await db.deletePerson(id);
+    res.json({ success: true, message: 'Person deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
