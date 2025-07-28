@@ -238,8 +238,26 @@ export function Dashboard() {
 
   const handleDeletePerson = async (listNumber: string) => {
     if (window.confirm("هل أنت متأكد من حذف هذا الشخص؟")) {
-      await db.deletePerson(listNumber);
-      loadPersons();
+      try {
+        console.log('🔧 Starting delete operation for list number:', listNumber);
+        await db.deletePerson(listNumber);
+        console.log('🔧 Delete operation completed successfully');
+        
+        // Show success notification
+        setNotification({
+          type: "success",
+          message: "تم حذف الشخص بنجاح",
+        });
+        
+        // Reload the persons list
+        await loadPersons();
+      } catch (error: any) {
+        console.error('🔧 Delete operation failed:', error);
+        setNotification({
+          type: "error",
+          message: `حدث خطأ أثناء حذف الشخص: ${error.message}`,
+        });
+      }
     }
   };
 
