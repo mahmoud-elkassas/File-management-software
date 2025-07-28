@@ -10,6 +10,8 @@ export class Database {
   }
 
   async handleResponse(response) {
+    console.log('🔧 handleResponse called with status:', response.status);
+    
     if (!response.ok) {
       const errorData = await response
         .json()
@@ -19,7 +21,11 @@ export class Database {
         errorData.error || `HTTP error! status: ${response.status}`
       );
     }
-    return response.json();
+    
+    console.log('🔧 Response is OK, parsing JSON...');
+    const result = await response.json();
+    console.log('🔧 Parsed result:', result);
+    return result;
   }
 
   async getAllPersons() {
@@ -99,11 +105,18 @@ export class Database {
     try {
       const deleteUrl = `${this.apiUrl}/persons?id=${listNumber}`;
       console.log('🔧 DELETE URL:', deleteUrl);
+      console.log('🔧 Starting DELETE request...');
       
       const response = await fetch(deleteUrl, {
         method: "DELETE",
       });
-      return this.handleResponse(response);
+      
+      console.log('🔧 DELETE response received:', response.status, response.statusText);
+      console.log('🔧 Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      const result = await this.handleResponse(response);
+      console.log('🔧 DELETE result:', result);
+      return result;
     } catch (error) {
       console.error("Error in deletePerson:", error);
       throw error;
