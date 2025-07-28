@@ -289,10 +289,7 @@ export function Dashboard() {
         const remainingPersons = persons.filter(p => p.id?.toString() === id);
         if (remainingPersons.length > 0) {
           console.warn('🔧 Warning: Person still appears in UI after delete');
-          setNotification({
-            type: "warning",
-            message: "تم حذف الشخص من قاعدة البيانات، لكن قد تحتاج لتحديث الصفحة",
-          });
+          // Removed the warning notification
         }
         
       } catch (error: any) {
