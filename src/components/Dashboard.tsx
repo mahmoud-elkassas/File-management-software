@@ -255,19 +255,19 @@ export function Dashboard() {
     }
   };
 
-  const handleDeletePerson = async (listNumber: string) => {
+  const handleDeletePerson = async (id: string) => {
     if (window.confirm("هل أنت متأكد من حذف هذا الشخص؟")) {
       try {
-        console.log('🔧 Starting delete operation for list number:', listNumber);
+        console.log('🔧 Starting delete operation for ID:', id);
         console.log('🔧 Current persons count before delete:', persons.length);
         console.log('🔧 Environment:', import.meta.env.MODE);
         console.log('🔧 API URL:', import.meta.env.VITE_API_URL);
         
         // Find the person to be deleted for verification
-        const personToDelete = persons.find(p => p.list_number === listNumber);
+        const personToDelete = persons.find(p => p.id?.toString() === id);
         console.log('🔧 Person to delete:', personToDelete);
         
-        await db.deletePerson(listNumber);
+        await db.deletePerson(id);
         console.log('🔧 Delete operation completed successfully');
         
         // Show success notification
@@ -286,7 +286,7 @@ export function Dashboard() {
         console.log('🔧 loadPersons completed');
         
         // Verify the person was actually deleted
-        const remainingPersons = persons.filter(p => p.list_number === listNumber);
+        const remainingPersons = persons.filter(p => p.id?.toString() === id);
         if (remainingPersons.length > 0) {
           console.warn('🔧 Warning: Person still appears in UI after delete');
           setNotification({

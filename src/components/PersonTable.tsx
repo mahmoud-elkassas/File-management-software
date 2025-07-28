@@ -5,7 +5,7 @@ import { Person } from "../db";
 interface PersonTableProps {
   persons: Person[];
   onEdit: (person: Person) => void;
-  onDelete: (listNumber: string) => void;
+  onDelete: (id: string) => void;
   onShowFiles: (person: Person) => void;
   selectedPersons: number[];
   onToggleSelection: (personId: number) => void;
@@ -199,7 +199,9 @@ export function PersonTable({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onDelete(person.list_number);
+                          if (person.id) {
+                            onDelete(person.id.toString());
+                          }
                         }}
                         className="text-red-600 hover:text-red-900"
                       >

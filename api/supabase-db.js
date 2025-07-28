@@ -170,17 +170,24 @@ export class SupabaseDbService {
   async deletePerson(identifier) {
     try {
       console.log('🔧 deletePerson: Starting delete operation for identifier:', identifier);
+      console.log('🔧 deletePerson: Identifier type:', typeof identifier);
+      console.log('🔧 deletePerson: Is numeric:', !isNaN(identifier));
       
       // Check if identifier is a number (id) or string (list_number)
       const isId = !isNaN(identifier) && Number.isInteger(Number(identifier));
+      console.log('🔧 deletePerson: Treating as ID:', isId);
       
       // First, let's check if the person exists
       let existingPerson;
       if (isId) {
+        console.log('🔧 deletePerson: Looking up by ID:', identifier);
         existingPerson = await this.getPersonById(identifier);
       } else {
+        console.log('🔧 deletePerson: Looking up by list_number:', identifier);
         existingPerson = await this.getPersonByListNumber(identifier);
       }
+      
+      console.log('🔧 deletePerson: Existing person found:', existingPerson);
       
       if (!existingPerson) {
         console.log('🔧 deletePerson: Person not found, nothing to delete');
@@ -192,19 +199,23 @@ export class SupabaseDbService {
       let query = supabase.from('persons').delete();
       
       if (isId) {
+        console.log('🔧 deletePerson: Deleting by ID:', identifier);
         query = query.eq('id', identifier);
       } else {
+        console.log('🔧 deletePerson: Deleting by list_number:', identifier);
         query = query.eq('list_number', identifier);
       }
 
+      console.log('🔧 deletePerson: Executing delete query...');
       const { data, error, count } = await query;
-
       console.log('🔧 deletePerson: Delete result:', { data, error, count });
 
       if (error) {
         console.error('🔧 deletePerson: Supabase error:', error);
         throw error;
       }
+      
+      console.log('🔧 deletePerson: Delete operation completed, verifying...');
       
       // Verify the deletion by trying to fetch the person again
       let verificationResult;
@@ -213,6 +224,8 @@ export class SupabaseDbService {
       } else {
         verificationResult = await this.getPersonByListNumber(identifier);
       }
+      
+      console.log('🔧 deletePerson: Verification result:', verificationResult);
       
       if (verificationResult) {
         console.warn('🔧 deletePerson: Person still exists after delete operation');

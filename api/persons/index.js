@@ -43,9 +43,18 @@ export default async function handler(req, res) {
         if (!deleteId) {
           return res.status(400).json({ error: 'ID parameter is required for DELETE' });
         }
-        console.log(`🔧 Deleting person with ID: ${deleteId}`);
-        await db.deletePerson(deleteId);
-        res.status(200).json({ success: true, message: 'Person deleted successfully' });
+        console.log(`🔧 API DELETE: Deleting person with ID: ${deleteId}`);
+        console.log(`🔧 API DELETE: Query parameters:`, req.query);
+        console.log(`🔧 API DELETE: Request body:`, req.body);
+        
+        try {
+          const result = await db.deletePerson(deleteId);
+          console.log(`🔧 API DELETE: Delete result:`, result);
+          res.status(200).json({ success: true, message: 'Person deleted successfully' });
+        } catch (error) {
+          console.error(`🔧 API DELETE: Error deleting person:`, error);
+          res.status(500).json({ error: error.message });
+        }
         break;
       
       default:
