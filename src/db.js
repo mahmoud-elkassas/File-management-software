@@ -79,7 +79,7 @@ export class Database {
   async updatePerson(updatedPerson) {
     try {
       const response = await fetch(
-        `${this.apiUrl}/persons/${updatedPerson.id}`,
+        `${this.apiUrl}/persons?id=${updatedPerson.id}`,
         {
           method: "PUT",
           headers: {

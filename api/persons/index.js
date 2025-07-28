@@ -28,18 +28,28 @@ export default async function handler(req, res) {
         res.status(201).json(person);
         break;
       
-      case 'DELETE':
+      case 'PUT':
         const { id } = req.query;
         if (!id) {
+          return res.status(400).json({ error: 'ID parameter is required for PUT' });
+        }
+        console.log(`🔧 Updating person with ID: ${id}`);
+        const updatedPerson = await db.updatePerson({ ...req.body, id });
+        res.status(200).json(updatedPerson);
+        break;
+      
+      case 'DELETE':
+        const { id: deleteId } = req.query;
+        if (!deleteId) {
           return res.status(400).json({ error: 'ID parameter is required for DELETE' });
         }
-        console.log(`🔧 Deleting person with ID: ${id}`);
-        await db.deletePerson(id);
+        console.log(`🔧 Deleting person with ID: ${deleteId}`);
+        await db.deletePerson(deleteId);
         res.status(200).json({ success: true, message: 'Person deleted successfully' });
         break;
       
       default:
-        res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
+        res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
