@@ -28,8 +28,18 @@ export default async function handler(req, res) {
         res.status(201).json(person);
         break;
       
+      case 'DELETE':
+        const { id } = req.query;
+        if (!id) {
+          return res.status(400).json({ error: 'ID parameter is required for DELETE' });
+        }
+        console.log(`🔧 Deleting person with ID: ${id}`);
+        await db.deletePerson(id);
+        res.status(200).json({ success: true, message: 'Person deleted successfully' });
+        break;
+      
       default:
-        res.setHeader('Allow', ['GET', 'POST']);
+        res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
