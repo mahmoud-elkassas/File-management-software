@@ -84,11 +84,26 @@ export function Dashboard() {
     navigate("/login");
   };
 
-  const loadPersons = async () => {
+  const loadPersons = async (forceRefresh = false) => {
     try {
-      console.log('🔧 loadPersons: Starting to load persons...');
+      console.log('🔧 loadPersons: Starting to load persons...', { forceRefresh });
+      
+      // Clear any cached data if force refresh is requested
+      if (forceRefresh) {
+        console.log('🔧 loadPersons: Force refresh requested, clearing cache...');
+        setPersons([]);
+        // Add a small delay to ensure state is cleared
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
       const loadedPersons = await db.getAllPersons();
       console.log('🔧 loadPersons: Received persons:', loadedPersons.length, loadedPersons);
+      
+      // Double-check that we're not getting stale data
+      if (forceRefresh && loadedPersons.length === persons.length) {
+        console.warn('🔧 loadPersons: Warning - same number of persons after force refresh');
+      }
+      
       setPersons(loadedPersons);
       console.log('🔧 loadPersons: State updated with', loadedPersons.length, 'persons');
     } catch (error) {
@@ -245,6 +260,12 @@ export function Dashboard() {
       try {
         console.log('🔧 Starting delete operation for list number:', listNumber);
         console.log('🔧 Current persons count before delete:', persons.length);
+        console.log('🔧 Environment:', import.meta.env.MODE);
+        console.log('🔧 API URL:', import.meta.env.VITE_API_URL);
+        
+        // Find the person to be deleted for verification
+        const personToDelete = persons.find(p => p.list_number === listNumber);
+        console.log('🔧 Person to delete:', personToDelete);
         
         await db.deletePerson(listNumber);
         console.log('🔧 Delete operation completed successfully');
@@ -256,11 +277,23 @@ export function Dashboard() {
         });
         
         console.log('🔧 About to reload persons...');
-        // Add a small delay to ensure database commit
-        await new Promise(resolve => setTimeout(resolve, 500));
-        // Reload the persons list
-        await loadPersons();
+        // Add a longer delay in production to ensure database commit
+        const delay = import.meta.env.MODE === 'production' ? 1000 : 500;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
+        // Force refresh after delete
+        await loadPersons(true);
         console.log('🔧 loadPersons completed');
+        
+        // Verify the person was actually deleted
+        const remainingPersons = persons.filter(p => p.list_number === listNumber);
+        if (remainingPersons.length > 0) {
+          console.warn('🔧 Warning: Person still appears in UI after delete');
+          setNotification({
+            type: "warning",
+            message: "تم حذف الشخص من قاعدة البيانات، لكن قد تحتاج لتحديث الصفحة",
+          });
+        }
         
       } catch (error: any) {
         console.error('🔧 Delete operation failed:', error);

@@ -32,8 +32,26 @@ export class Database {
     try {
       // Add cache-busting timestamp to ensure fresh data
       const timestamp = new Date().getTime();
-      const response = await fetch(`${this.apiUrl}/persons?t=${timestamp}`);
-      return this.handleResponse(response);
+      const randomId = Math.random().toString(36).substring(7);
+      const url = `${this.apiUrl}/persons?t=${timestamp}&r=${randomId}`;
+      
+      console.log('🔧 getAllPersons: Fetching from URL:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      
+      console.log('🔧 getAllPersons: Response status:', response.status);
+      
+      const result = await this.handleResponse(response);
+      console.log('🔧 getAllPersons: Received', result.length, 'persons');
+      
+      return result;
     } catch (error) {
       console.error("Error in getAllPersons:", error);
       throw error;

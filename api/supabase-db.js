@@ -169,8 +169,25 @@ export class SupabaseDbService {
 
   async deletePerson(identifier) {
     try {
+      console.log('🔧 deletePerson: Starting delete operation for identifier:', identifier);
+      
       // Check if identifier is a number (id) or string (list_number)
       const isId = !isNaN(identifier) && Number.isInteger(Number(identifier));
+      
+      // First, let's check if the person exists
+      let existingPerson;
+      if (isId) {
+        existingPerson = await this.getPersonById(identifier);
+      } else {
+        existingPerson = await this.getPersonByListNumber(identifier);
+      }
+      
+      if (!existingPerson) {
+        console.log('🔧 deletePerson: Person not found, nothing to delete');
+        return { success: true, message: 'Person not found or already deleted' };
+      }
+      
+      console.log('🔧 deletePerson: Found person to delete:', existingPerson);
       
       let query = supabase.from('persons').delete();
       
@@ -180,12 +197,32 @@ export class SupabaseDbService {
         query = query.eq('list_number', identifier);
       }
 
-      const { error } = await query;
+      const { data, error, count } = await query;
 
-      if (error) throw error;
-      return { success: true };
+      console.log('🔧 deletePerson: Delete result:', { data, error, count });
+
+      if (error) {
+        console.error('🔧 deletePerson: Supabase error:', error);
+        throw error;
+      }
+      
+      // Verify the deletion by trying to fetch the person again
+      let verificationResult;
+      if (isId) {
+        verificationResult = await this.getPersonById(identifier);
+      } else {
+        verificationResult = await this.getPersonByListNumber(identifier);
+      }
+      
+      if (verificationResult) {
+        console.warn('🔧 deletePerson: Person still exists after delete operation');
+        throw new Error('Delete operation completed but person still exists in database');
+      }
+      
+      console.log('🔧 deletePerson: Delete operation successful');
+      return { success: true, deletedPerson: existingPerson };
     } catch (error) {
-      console.error('Error in deletePerson:', error);
+      console.error('🔧 deletePerson: Error in deletePerson:', error);
       throw error;
     }
   }
