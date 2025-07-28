@@ -30,7 +30,9 @@ export class Database {
 
   async getAllPersons() {
     try {
-      const response = await fetch(`${this.apiUrl}/persons`);
+      // Add cache-busting timestamp to ensure fresh data
+      const timestamp = new Date().getTime();
+      const response = await fetch(`${this.apiUrl}/persons?t=${timestamp}`);
       return this.handleResponse(response);
     } catch (error) {
       console.error("Error in getAllPersons:", error);

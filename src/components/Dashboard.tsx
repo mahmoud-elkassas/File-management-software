@@ -256,6 +256,8 @@ export function Dashboard() {
         });
         
         console.log('🔧 About to reload persons...');
+        // Add a small delay to ensure database commit
+        await new Promise(resolve => setTimeout(resolve, 500));
         // Reload the persons list
         await loadPersons();
         console.log('🔧 loadPersons completed');
