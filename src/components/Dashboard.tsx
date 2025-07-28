@@ -498,7 +498,8 @@ export function Dashboard() {
     <div className="min-h-screen bg-gray-100 p-6 rtl">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+            <Folder size={32} className="text-blue-600" />
             برنامج إدارة الملفات
           </h1>
           <button
