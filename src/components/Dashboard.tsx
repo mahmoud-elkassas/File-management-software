@@ -86,9 +86,13 @@ export function Dashboard() {
 
   const loadPersons = async () => {
     try {
+      console.log('🔧 loadPersons: Starting to load persons...');
       const loadedPersons = await db.getAllPersons();
+      console.log('🔧 loadPersons: Received persons:', loadedPersons.length, loadedPersons);
       setPersons(loadedPersons);
+      console.log('🔧 loadPersons: State updated with', loadedPersons.length, 'persons');
     } catch (error) {
+      console.error('🔧 loadPersons: Error loading persons:', error);
       const errorMessage =
         error instanceof Error ? error.message : "حدث خطأ غير معروف";
       setNotification({
@@ -240,6 +244,8 @@ export function Dashboard() {
     if (window.confirm("هل أنت متأكد من حذف هذا الشخص؟")) {
       try {
         console.log('🔧 Starting delete operation for list number:', listNumber);
+        console.log('🔧 Current persons count before delete:', persons.length);
+        
         await db.deletePerson(listNumber);
         console.log('🔧 Delete operation completed successfully');
         
@@ -249,8 +255,11 @@ export function Dashboard() {
           message: "تم حذف الشخص بنجاح",
         });
         
+        console.log('🔧 About to reload persons...');
         // Reload the persons list
         await loadPersons();
+        console.log('🔧 loadPersons completed');
+        
       } catch (error: any) {
         console.error('🔧 Delete operation failed:', error);
         setNotification({
