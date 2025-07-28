@@ -54,10 +54,10 @@ export class SupabaseDbService {
         .from('persons')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to avoid errors when no rows found
 
       if (error) throw error;
-      return data;
+      return data; // This will be null if no person found
     } catch (error) {
       console.error('Error in getPersonById:', error);
       throw error;
@@ -70,10 +70,10 @@ export class SupabaseDbService {
         .from('persons')
         .select('*')
         .eq('list_number', listNumber)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to avoid errors when no rows found
 
       if (error) throw error;
-      return data;
+      return data; // This will be null if no person found
     } catch (error) {
       console.error('Error in getPersonByListNumber:', error);
       throw error;
@@ -114,7 +114,7 @@ export class SupabaseDbService {
           files: personData.files || null
         }])
         .select()
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single
 
       if (error) throw error;
       return data;
@@ -141,7 +141,7 @@ export class SupabaseDbService {
         })
         .eq('id', personData.id)
         .select()
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single
 
       if (error) throw error;
       return data;
@@ -234,7 +234,7 @@ export class SupabaseDbService {
         .update({ status })
         .eq('id', personId)
         .select()
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single
 
       if (error) throw error;
       return data;
@@ -257,7 +257,7 @@ export class SupabaseDbService {
           error: entry.error || null
         }])
         .select()
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single
 
       if (error) throw error;
       return data;
@@ -292,7 +292,7 @@ export class SupabaseDbService {
         .gte('sent_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         .order('sent_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single
 
       if (error) throw error;
       return data;
